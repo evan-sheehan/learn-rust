@@ -1,9 +1,10 @@
+use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::{BufRead, BufReader};
 
 fn main() {
-    let users_file = get_users_file().expect("Failed to open users file");
+    let mut users_file = get_users_file().expect("Failed to open users file");
 
     println!("Please enter username");
     let mut username = String::new();
@@ -12,12 +13,10 @@ fn main() {
         .read_line(&mut username)
         .expect("Failed to read line");
 
-    // HANDLE USERNAME DOESN'T EXIST
     let username_exists = check_username_exists(username.trim()).expect("OH SHIT OH SHIT");
 
-    if username_exists == true {
-        println!("Ohhhhhh woooo, time to enter your password but I haven't implemented that yet!!!")
-    } else {
+    // Handle Invalid Username
+    if username_exists == false {
         println!("Username not found, would you like to create a new user? (y/n)");
         let mut user_input = String::new();
         while user_input.trim() != "y" && user_input.trim() != "n" {
@@ -26,7 +25,7 @@ fn main() {
                 .read_line(&mut user_input)
                 .expect("Failed to read line");
             if user_input.trim() == "y" {
-                prompt_create_new_user();
+                prompt_create_new_user(&mut users_file);
             } else if user_input.trim() == "n" {
                 println!("Exiting program");
                 return;
@@ -36,14 +35,16 @@ fn main() {
         }
     }
 
+    // Handle Password Input
+    println!("Please enter password");
     io::stdin()
         .read_line(&mut password)
         .expect("Failed to read line");
 
-    //HANDLE INVALID PASSWORD
+    // PASSWORD CHECK
 }
 
-fn prompt_create_new_user() {
+fn prompt_create_new_user(users_file: &mut File) {
     println!("Enter a new username");
     let mut username = String::new();
     io::stdin()
@@ -69,7 +70,7 @@ fn prompt_create_new_user() {
     }
 
     // let users_file = get_users_file().expect("Couldn't get users file");
-
+    // fs::write("users.txt", confirm_username.push_str("\n")).expect("Couldn't write to users file");
     // SANITIZE FILE
 
     // WRITE TO FILE
